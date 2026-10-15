@@ -4,7 +4,7 @@
 
 Git's native commit and tag signature verification verifies the signature against the keys available in the local keyring or `gpg.ssh.allowedSignersFile`. It does not verify that the signature matches the committer or tagger.
 
-This is discussed in [`verify-commit: scriptable commit signature verification`](https://lore.kernel.org/git/20140613080229.GJ7908@sigill.intra.peff.net/), where the consensus is that this is a policy and Git itself should be unopinionated about it, with the specific counterpoint that the committer might use a "plus address" that doesn't match that of a key identifier.
+This is discussed in [_verify-commit: scriptable commit signature verification_](https://lore.kernel.org/git/20140613080229.GJ7908@sigill.intra.peff.net/), where the consensus is that this is a policy and Git itself should be unopinionated about it, with the specific counterpoint that the committer might use a "plus address" that doesn't match that of a key identifier.
 
 This allows committer A to impersonate committer B by signing a forged commit with A's key, so long as the verifying party trusts both keys and doesn't manually inspect the output of `git verify-commit` and compare the key identity with the committer identity, which is common if the commit verification is automated.
 
