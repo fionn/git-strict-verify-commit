@@ -1,0 +1,26 @@
+name: CI
+
+on: [push]
+
+permissions:
+  contents: read
+
+jobs:
+
+  verify-signature:
+
+    name: Verify Signature
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Set allowed signers
+        run: git config gpg.ssh.allowedSignersFile .allowed_signers
+
+      - name: Strictly verify commit signature
+        run: ./git-strict-verify-commit HEAD
