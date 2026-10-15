@@ -28,7 +28,7 @@ function main {
     buffer="$(git cat-file commit "$commit" | sed -e '/^gpgsig/d; /^ /d')"
 
     # TODO: clean up signature_path on exit.
-    signature_path="$(mktemp -t git_signature)"
+    signature_path="$(mktemp -t git_signature_tmpXXXXXX)"
     git cat-file commit "$commit" | sed -ne '/^gpgsig/,/---END/s/^[a-z]* //p' > "$signature_path"
 
     # Verify the commit signature against the signing key belonging to the
