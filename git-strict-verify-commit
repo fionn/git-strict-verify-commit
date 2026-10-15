@@ -12,28 +12,20 @@ function main {
     local committer
     committer="$(git log -1 "$commit" --format="%ce")"
 
-    # Match the committer to an allowed signer principal. If this fails, fall
-    # back to verifying the signature with a potentially mis-matched principal,
-    # but print the output and exit with a non-zero status.
+    # Try to match the committer to an allowed signer principal. If this fails,
+    # then we still carry on as usual, but after the standard signature
+    # verification we exit with a failure and print the reason (e.g. "No
+    # principal matched").
     local status=0
     local matched_principals
     matched_principals="$(ssh-keygen -Y match-principals -f "$allowed_signers_file" -I "$committer" 2>&1)" || status=$?
+
+    git verify-commit "$commit"
+
     if [[ $status -ne 0 ]]; then
-        git verify-commit "$commit"
         echo "$matched_principals" >&2
         exit $status
     fi
-
-    local buffer
-    buffer="$(git cat-file commit "$commit" | sed -e '/^gpgsig/d; /^ /d')"
-
-    # TODO: clean up signature_path on exit.
-    signature_path="$(mktemp -t git_signature_tmpXXXXXX)"
-    git cat-file commit "$commit" | sed -ne '/^gpgsig/,/---END/s/^[a-z]* //p' > "$signature_path"
-
-    # Verify the commit signature against the signing key belonging to the
-    # committer.
-    ssh-keygen -Y verify -f "$allowed_signers_file" -I "$committer" -n git -s "$signature_path" <<< "$buffer"
 }
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
