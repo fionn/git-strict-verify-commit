@@ -12,8 +12,24 @@ This allows committer _A_ to impersonate committer _B_ by forging a commit attri
 
 This is a strict version of `git verify-commit`, only for commits signed with SSH keys. If unable to match the committer to a key, we fall back to verifying the signature anyway (i.e. how `git verify-commit` works) but print the error and exit with a non-zero status.
 
-## Installation and Usage
+## Usage
+
+### Git Subcommand
 
 Link `git-strict-verify-commit` to somewhere in `PATH`.
 
 Verify a commit with `git strict-verify-commit [<commit>]`. We are more forgiving than `git verify-commit` as we default to `HEAD` if the argument is omitted.
+
+### GitHub Action
+
+Run as an action with something like
+
+```yaml
+- name: Strictly verify commit signature
+  uses: fionn/git-strict-verify-commit@master
+  with:
+    allowed-signers: path/to/allowed_signers
+    commit: 1234567
+```
+
+where both inputs are optional, with `allowed-signers` defaulting to `.allowed_signers` and `commit` defaulting to `HEAD`.

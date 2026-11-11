@@ -1,0 +1,34 @@
+
+name: Git strict-verify-commit
+description: Verify Git commit SSH signature strictly
+
+inputs:
+  allowed-signers:
+    description: Path to SSH allowed signers file
+    required: false
+    default: .allowed_signers
+  commit:
+    description: Commit hash
+    required: false
+    default: HEAD
+
+branding:
+  icon: award
+  color: green
+
+runs:
+
+  using: composite
+  steps:
+
+    - name: Set allowed signers
+      run: git config gpg.ssh.allowedSignersFile "$allowed_signers"
+      shell: bash
+      env:
+        allowed_signers: ${{ inputs.allowed-signers }}
+
+    - name: Verify commit signature
+      run: $GITHUB_ACTION_PATH/git-strict-verify-commit "$commit"
+      shell: bash
+      env:
+        commit: ${{ inputs.commit }}

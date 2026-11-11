@@ -19,8 +19,5 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Set allowed signers
-        run: git config gpg.ssh.allowedSignersFile .allowed_signers
-
       - name: Strictly verify commit signature
-        run: ./git-strict-verify-commit HEAD
+        uses: $/
