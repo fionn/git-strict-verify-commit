@@ -3,7 +3,8 @@
 set -euo pipefail
 
 function main {
-    local -r commit="${1:-"HEAD"}"
+    local -r args=("$@")
+    local -r commit="${args["$((${#args[@]} - 1))"]}"
 
     local allowed_signers_file
     allowed_signers_file="$(git config get gpg.ssh.allowedSignersFile)"
@@ -20,7 +21,7 @@ function main {
     local matched_principals
     matched_principals="$(ssh-keygen -Y match-principals -f "$allowed_signers_file" -I "$committer" 2>&1)" || status=$?
 
-    git verify-commit "$commit"
+    git verify-commit "${args[@]}"
 
     if [[ $status -ne 0 ]]; then
         echo "$matched_principals" >&2
